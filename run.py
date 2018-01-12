@@ -85,7 +85,7 @@ def main(argv):
         # in the Annotator authentication documentation[1].
         #
         # [1]: https://github.com/okfn/annotator/wiki/Authentication
-        g.user = MockUser('alice')
+        g.user = MockUser('anonymous')
 
         # By default, this test application won't do full-on authentication
         # tests. Set AUTH_ON to True in the config file to enable (limited)
@@ -104,6 +104,14 @@ def main(argv):
         else:
             g.authorize = mock_authorizer
 
+      @app.after_request
+      def after_request(response):
+          response.headers.add('Access-Control-Allow-Origin', '*')
+          response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+          response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+          return response
+            
+            
     app.register_blueprint(store.store)
 
     host = os.environ.get('HOST', '127.0.0.1')
